@@ -28,6 +28,13 @@ backend/scripts/benchmark/*.jsonl
 
 # Environment variables
 .env
+.env.*
+!.env.example
+
+# Local secrets and private keys (never commit)
+secrets/
+*.pem
+*.key
 
 # Configuration files
 config.yaml
