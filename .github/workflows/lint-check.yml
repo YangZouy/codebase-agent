@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.13.13'
 
       - name: Check agent guidance on pull requests
         if: github.event_name == 'pull_request'
@@ -45,7 +45,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.13.13'
 
       - name: Check every label applied by triage.yml is declared in labels.yml
         run: python scripts/check_label_declarations.py
@@ -58,7 +58,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.13.13'
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
