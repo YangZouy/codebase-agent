@@ -1,13 +1,12 @@
 name: Unit Tests
 
+# PR 门禁由 ci.yml 统一承担（唯一 required check: gate）。本文件只保留默认分支上的例行检查。
 on:
   push:
     branches: [ 'main', '*-dev' ]
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
-  group: unit-tests-${{ github.event.pull_request.number || github.ref }}
+  group: unit-tests-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -18,7 +17,6 @@ jobs:
     # The main job installs --extra postgres; this job proves the documented
     # contributor path (uv sync --group dev, no extras) still collects the
     # whole suite, so optional-dependency imports must stay lazy.
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -46,7 +44,6 @@ jobs:
         run: uv run pytest --collect-only -q
 
   backend-unit-tests:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
