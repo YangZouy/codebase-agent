@@ -385,7 +385,10 @@ export DEER_FLOW_HOME
 
 # Extra flags for uvicorn
 if $DEV_MODE && ! $DAEMON_MODE; then
-    GATEWAY_EXTRA_FLAGS="--reload --reload-include='*.yaml' --reload-include='.env' --reload-exclude='*.pyc' --reload-exclude='__pycache__' --reload-exclude='$REPO_ROOT/backend/sandbox' --reload-exclude='$DEER_FLOW_HOME' --reload-exclude='$BACKEND_RUNTIME_HOME'"
+    # --reload makes uvicorn 0.54 pick SelectorEventLoop on Windows, which has
+    # no subprocess transport and breaks ACP's create_subprocess_exec with a
+    # message-less NotImplementedError. Force ProactorEventLoop via our factory.
+    GATEWAY_EXTRA_FLAGS="--loop app.gateway.loop_factory:gateway_loop_factory --reload --reload-include='*.yaml' --reload-include='.env' --reload-exclude='*.pyc' --reload-exclude='__pycache__' --reload-exclude='$REPO_ROOT/backend/sandbox' --reload-exclude='$DEER_FLOW_HOME' --reload-exclude='$BACKEND_RUNTIME_HOME'"
 else
     GATEWAY_EXTRA_FLAGS=""
 fi

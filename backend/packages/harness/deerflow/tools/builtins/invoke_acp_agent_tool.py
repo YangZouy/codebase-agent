@@ -425,7 +425,7 @@ def build_invoke_acp_agent_tool(agents: dict) -> BaseTool:
             logger.info("ACP agent '%s' returned %d characters", agent, len(result))
             return result or "(no response)"
         except Exception as e:
-            logger.error("ACP agent '%s' invocation failed: %s", agent, e)
+            logger.exception("ACP agent '%s' invocation failed", agent)
             # Report the configured command, not the resolved path: remediation
             # text has to match what the operator wrote in config.yaml.
             return await asyncio.to_thread(_format_invocation_error, agent, agent_config.command, e)
