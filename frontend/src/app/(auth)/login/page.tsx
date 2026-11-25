@@ -403,7 +403,7 @@ export default function LoginPage() {
         )}
 
         <div className="text-muted-foreground text-center text-xs">
-          <Link href="/" className="hover:underline">
+          <Link href="/home" className="hover:underline">
             {t.login.backToHome}
           </Link>
         </div>

@@ -19,7 +19,7 @@ export default async function BlogLayout({ children }) {
       navbar={
         <Header
           className="relative max-w-full px-10"
-          homeURL="/"
+          homeURL="/home"
           locale={locale}
         />
       }
