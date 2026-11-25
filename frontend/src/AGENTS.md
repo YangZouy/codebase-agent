@@ -193,7 +193,9 @@ export on a page error or non-advancing cursor; demos keep their fixture path.
   cookie. Public server routes load one dictionary at a time through
   `core/i18n/translations.ts`; the interactive auth/workspace client provider owns both
   formatter-bearing dictionaries because functions cannot cross the RSC boundary.
-  Keep public `/` static and keep rich-content CSS on the routes that render it.
+  `/` redirects straight to `/workspace` (auth/setup is resolved by the workspace
+  layout); the marketing landing page lives at `/home` and must stay static. Keep
+  rich-content CSS on the routes that render it.
 - **Thread hooks** (`useThreadStream`, `useSubmitThread`, `useThreads`) are the primary API interface
 - **Thread routes** — construct Web UI chat paths through `core/threads/utils.ts::pathOfThread()`, which percent-encodes both custom agent names and thread IDs before inserting them into route segments
 - **LangGraph client** is a singleton obtained via `getAPIClient()` in `core/api/`

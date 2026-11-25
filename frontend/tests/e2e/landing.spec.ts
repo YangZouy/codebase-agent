@@ -4,7 +4,7 @@ import { mockLangGraphAPI } from "./utils/mock-api";
 
 test.describe("Landing page", () => {
   test("renders the header and hero section", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/home");
 
     await expect(
       page.locator("header").first().getByText("DeerFlow", { exact: true }),
@@ -21,7 +21,7 @@ test.describe("Landing page", () => {
   for (const width of [320, 375, 390]) {
     test(`does not overflow at ${width}px width`, async ({ page }) => {
       await page.setViewportSize({ width, height: 812 });
-      await page.goto("/");
+      await page.goto("/home");
 
       await expect
         .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
@@ -33,12 +33,21 @@ test.describe("Landing page", () => {
   test("Get Started link navigates to workspace", async ({ page }) => {
     mockLangGraphAPI(page);
 
-    await page.goto("/");
+    await page.goto("/home");
 
     const getStarted = page.getByRole("link", { name: /get started/i });
     await getStarted.click();
 
     // Should redirect to /workspace/chats/new
+    await page.waitForURL("**/workspace/chats/new");
+    await expect(page).toHaveURL(/\/workspace\/chats\/new/);
+  });
+
+  test("root redirects straight to a new chat", async ({ page }) => {
+    mockLangGraphAPI(page);
+
+    await page.goto("/");
+
     await page.waitForURL("**/workspace/chats/new");
     await expect(page).toHaveURL(/\/workspace\/chats\/new/);
   });
