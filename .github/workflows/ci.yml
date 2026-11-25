@@ -159,6 +159,8 @@ jobs:
       pull-requests: write
     env:
       GH_TOKEN: ${{ github.token }}
+      # gh 需要在 git 仓库里探测 remote；这些 job 不做 checkout，所以显式指定仓库。
+      GH_REPO: ${{ github.repository }}
     steps:
       - name: Ping qa once per head SHA
         env:
@@ -166,10 +168,10 @@ jobs:
           SHA: ${{ github.sha }}
           RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if gh pr view "$PR" --json comments --jq '.comments[].body' | grep -qF "ci-ok:$SHA"; then
+          if gh pr view "$PR" --repo "$GH_REPO" --json comments --jq '.comments[].body' | grep -qF "ci-ok:$SHA"; then
             echo "already pinged for $SHA"; exit 0
           fi
-          gh pr comment "$PR" --body "<!-- ci-ok:$SHA -->@sf-qa 门禁已过（gate=success，sha ${SHA:0:7}）。请按 AC 逐条验收，禁止用自跑结果替代门禁结论。CI: $RUN"
+          gh pr comment "$PR" --repo "$GH_REPO" --body "<!-- ci-ok:$SHA -->@sf-qa 门禁已过（gate=success，sha ${SHA:0:7}）。请按 AC 逐条验收，禁止用自跑结果替代门禁结论。CI: $RUN"
 
   notify-developer:
     name: notify-developer
@@ -182,6 +184,7 @@ jobs:
       pull-requests: write
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
       - name: Ping developer with circuit breaker
         env:
@@ -189,12 +192,12 @@ jobs:
           SHA: ${{ github.sha }}
           RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if gh pr view "$PR" --json comments --jq '.comments[].body' | grep -qF "ci-fail:$SHA"; then
+          if gh pr view "$PR" --repo "$GH_REPO" --json comments --jq '.comments[].body' | grep -qF "ci-fail:$SHA"; then
             echo "already pinged for $SHA"; exit 0
           fi
-          N=$(gh pr view "$PR" --json comments --jq '[.comments[].body|select(contains("<!-- ci-fail"))]|length')
+          N=$(gh pr view "$PR" --repo "$GH_REPO" --json comments --jq '[.comments[].body|select(contains("<!-- ci-fail"))]|length')
           if [ "$N" -ge 3 ]; then
-            gh pr comment "$PR" --body "<!-- ci-fail:$SHA -->门禁连续 3 次失败，已停止自动修复，请人工介入。CI: $RUN"
+            gh pr comment "$PR" --repo "$GH_REPO" --body "<!-- ci-fail:$SHA -->门禁连续 3 次失败，已停止自动修复，请人工介入。CI: $RUN"
             exit 0
           fi
-          gh pr comment "$PR" --body "<!-- ci-fail:$SHA -->@sf-developer 门禁未过（gate=failure）。请按日志修复后 push 到本分支（不要新建 PR），等到 gate 转绿再结束。CI: $RUN"
+          gh pr comment "$PR" --repo "$GH_REPO" --body "<!-- ci-fail:$SHA -->@sf-developer 门禁未过（gate=failure）。请按日志修复后 push 到本分支（不要新建 PR），等到 gate 转绿再结束。CI: $RUN"
